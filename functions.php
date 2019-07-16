@@ -36,8 +36,22 @@ function geneteka_books() {
   ];
 }
 
+/*
+  Search for a person.
+
+  Required: name, surname, region.
+
+  $options array:
+    name          - 'John'
+    surname       - 'Doe'
+    record_type   - 'birth' or 'marriage' or 'death'
+    regions       - eg. 'mazowieckie'
+    from          - eg. 1823
+    to            - eg. 1864
+*/
 function geneteka_search($options) {
   $regions = geneteka_regions();
+  $books = geneteka_books();
 
   $query = array(
     'op' => 'gt', //< gt = geneteka
@@ -63,12 +77,29 @@ function geneteka_search($options) {
     $query['search_lastname'] = $options['surname'];
   }
 
+  if (isset($options['record_type'])) {
+    if (isset($books[$options['record_type']])) {
+      $query['bdm'] = $books[$options['record_type']];
+      $query['rid'] = $books[$options['record_type']];
+    } else {
+      echo 'NOT SUPPORTED RECORD TYPE: ' . $options['record_type'];
+    }
+  }
+
   if (isset($options['region'])) {
     if (isset($regions[$options['region']])) {
       $query['w'] = $regions[$options['region']];
     } else {
       echo 'NOT SUPPORTED: all regions';
     }
+  }
+
+  if (isset($options['from'])) {
+    $query['from_date'] = $options['from'];
+  }
+
+  if (isset($options['to'])) {
+    $query['to_date'] = $options['to'];
   }
 
   $url = geneteka_api_url($query);
@@ -79,4 +110,32 @@ function geneteka_search($options) {
 
 function geneteka_if_exists($options) {
   return geneteka_search($options)['recordsTotal'] > 0;
+}
+
+function geneteka_find_person($name, $surname) {
+  $books = geneteka_books();
+  $regions = geneteka_regions();
+  $results = [];
+
+  $count = 0;
+  $max_count = count($books) * count($regions);
+
+  foreach ($regions as $region => $rcode) {
+    foreach ($books as $book => $bcode) {
+      ++$count;
+      echo ">> [$count/$max_count] checking $region $book ...";
+      $found = geneteka_search(['name' => $name, 'surname' => $surname, 'region' => $region, 'record_type' => $book]);
+      if (isset($found['recordsTotal']) && $found['recordsTotal'] > 0) {
+        echo "found {$found['recordsTotal']} records!\n";
+        if (isset($results[$region]) === false) $results[$region] = [];
+        $results[$region][$book] = 1;
+      } else {
+        echo "nothing found.\n";
+      }
+      //sleep(1);
+      usleep(250000); // 0.25 sec
+    }
+  }
+
+  return $results;
 }
