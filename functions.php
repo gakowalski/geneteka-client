@@ -123,7 +123,7 @@ function geneteka_find_person($name, $surname) {
   foreach ($regions as $region => $rcode) {
     foreach ($books as $book => $bcode) {
       ++$count;
-      echo ">> [$count/$max_count] checking $region $book ...";
+      echo ">> [$count/$max_count] checking $region $book... ";
       $found = geneteka_search(['name' => $name, 'surname' => $surname, 'region' => $region, 'record_type' => $book]);
       if (isset($found['recordsTotal']) && $found['recordsTotal'] > 0) {
         echo "found {$found['recordsTotal']} records!\n";
@@ -133,7 +133,7 @@ function geneteka_find_person($name, $surname) {
         echo "nothing found.\n";
       }
       //sleep(1);
-      usleep(250000); // 0.25 sec
+      usleep(125000); // 0.125 sec
     }
   }
 
