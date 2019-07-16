@@ -36,7 +36,7 @@ function geneteka_books() {
   ];
 }
 
-function geneteka_if_exists($options) {
+function geneteka_search($options) {
   $regions = geneteka_regions();
 
   $query = array(
@@ -51,6 +51,8 @@ function geneteka_if_exists($options) {
     'from_date' => '',
     'to_date' => '',
     'exac' => 1, //< strict search
+    'start' => 0,
+    'length' => 10,
   );
 
   if (isset($options['name'])) {
@@ -69,10 +71,12 @@ function geneteka_if_exists($options) {
     }
   }
 
-  $url = geneteka_url($query);
+  $url = geneteka_api_url($query);
   $str = file_get_contents($url);
-  $re = '/Pozycje od \d+ do \d+ z \d+/m';
 
-  //return preg_match($re, $str) === 1;
-  return $str;
+  return json_decode($str, true);
+}
+
+function geneteka_if_exists($options) {
+  return geneteka_search($options)['recordsTotal'] > 0;
 }
