@@ -19,5 +19,5 @@ or for all regions
 
 ```php
 require 'functions.php';
-geneteka_find_person('X', 'Y', 'birth', options: [ 'from' => 'Z', 'to' => 'Z' ]);
+var_dump(geneteka_find_person('X', 'Y', 'birth', options: [ 'from' => 'Z', 'to' => 'Z' ]));
 ```

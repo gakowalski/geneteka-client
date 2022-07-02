@@ -135,7 +135,7 @@ function geneteka_find_person($name, $surname, $book = null, $region = null, $op
   foreach ($regions as $_region => $rcode) {
     foreach ($books as $_book => $bcode) {
       ++$count;
-      echo ">> [$count/$max_count] checking $_region $_book... ";
+      echo ">> [$count/$max_count] checking $_region $_book... \t";
       $found = geneteka_search($search_array + [
         'region' => $_region, 
         'record_type' => $_book
