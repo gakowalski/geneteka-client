@@ -119,23 +119,31 @@ function geneteka_if_exists($options) {
   return geneteka_search($options)['recordsTotal'] > 0;
 }
 
-function geneteka_find_person($name, $surname) {
-  $books = geneteka_books();
-  $regions = geneteka_regions();
+function geneteka_find_person($name, $surname, $book = null, $region = null, $options = []) {
+  $books = $book ? [ $book => 0 ] : geneteka_books();
+  $regions = $region ? [ $region => 0 ] : geneteka_regions();
   $results = [];
+
+  $search_array = [
+    'name' => $name, 
+    'surname' => $surname, 
+  ] + $options;
 
   $count = 0;
   $max_count = count($books) * count($regions);
 
-  foreach ($regions as $region => $rcode) {
-    foreach ($books as $book => $bcode) {
+  foreach ($regions as $_region => $rcode) {
+    foreach ($books as $_book => $bcode) {
       ++$count;
-      echo ">> [$count/$max_count] checking $region $book... ";
-      $found = geneteka_search(['name' => $name, 'surname' => $surname, 'region' => $region, 'record_type' => $book]);
+      echo ">> [$count/$max_count] checking $_region $_book... ";
+      $found = geneteka_search($search_array + [
+        'region' => $_region, 
+        'record_type' => $_book
+      ]);
       if (isset($found['recordsTotal']) && $found['recordsTotal'] > 0) {
         echo "found {$found['recordsTotal']} records!\n";
-        if (isset($results[$region]) === false) $results[$region] = [];
-        $results[$region][$book] = 1;
+        if (isset($results[$_region]) === false) $results[$_region] = [];
+        $results[$_region][$_book] = 1;
       } else {
         echo "nothing found.\n";
       }
