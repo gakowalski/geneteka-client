@@ -92,6 +92,8 @@ function geneteka_search($options) {
     } else {
       echo 'NOT SUPPORTED: all regions';
     }
+  } else {
+    echo 'NOT SUPPORTED: no region specified';
   }
 
   if (isset($options['from'])) {
@@ -103,7 +105,12 @@ function geneteka_search($options) {
   }
 
   $url = geneteka_api_url($query);
-  $str = file_get_contents($url);
+  $str = file_get_contents($url, context: stream_context_create([
+    'ssl' => [
+      'verify_peer'=> false,
+      'verify_peer_name'=> false,
+    ],
+  ]));
 
   return json_decode($str, true);
 }
