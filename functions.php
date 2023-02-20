@@ -147,7 +147,6 @@ function geneteka_find_person($name, $surname, $book = null, $region = null, $op
       } else {
         echo "nothing found.\n";
       }
-      //sleep(1);
       usleep(125000); // 0.125 sec
     }
   }
